@@ -14,6 +14,7 @@ import CreatePosts from './components/CreatePosts';
 import Profile from './components/Profile';
 import ViewPost from './components/ViewPost';
 import EditPost from './components/EditPost';
+import DeletePost from './components/DeletePost';
 import BaristaPosts from './components/BaristaPosts';
 import Hub from './components/Hub';
 import About from './components/About';
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       {path: "create", element: <CreatePosts />},
       {path: "posts/:id", element: <ViewPost />},
       {path: "posts/:id/edit", element: <EditPost />},
+      {path: "posts/:id/delete", element: <DeletePost />},
       {path: "posts/users/:id", element: <BaristaPosts />},
       {path: "myposts/:id", element: <Hub />},
       {path: "about", element: <About />}
