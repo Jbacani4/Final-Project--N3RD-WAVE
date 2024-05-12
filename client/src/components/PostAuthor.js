@@ -37,7 +37,7 @@ const AuthorInfo = styled.div`
 
 const PostAuthor = () => {
   return (
-    <AuthorCard to={`posts/users/:id`}>
+    <AuthorCard to={`profile/:id`}>
       <AuthorIcon>
         <img src={Icon} alt='Author Icon' />
       </AuthorIcon>
