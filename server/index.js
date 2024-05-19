@@ -1,11 +1,12 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const dotenv = require('dotenv');
 const { nA, errHandler } = require('./errors/errorHandlers');
-
 const userRoutes = require('./routes/userRoutes');
 const postsRoutes = require('./routes/postsRoutes');
+
+dotenv.config(); // Ensure this is called before using any environment variables
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,7 +25,7 @@ app.get('/', (req, res) => {
 MongoClient.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(client => {
     console.log('Connected to MongoDB');
-    
+
     // Store the database instance in the app.locals
     const db = client.db('n3rd-wave');
     app.locals.db = db;

@@ -1,19 +1,12 @@
 //404
 
 const nA = (req, res, next) => {
-    const err = new Error(`Not found - ${req.originalUrl}`)
-    res.status(404);
-    next(err);
-
-}
-
-const errHandler = (err, req, res, next) => {
-    if(res.headerSent) {
-        return next(err)
-    }
-    res.status(err.code || 500).json({
-        message: err.message || "unknown error has occured"
-    })
-}
-
-module.exports= {nA, errHandler}
+    res.status(404).json({ message: 'Not Found' });
+  };
+  
+  const errHandler = (err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  };
+  
+  module.exports = { nA, errHandler };
