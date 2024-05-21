@@ -115,7 +115,7 @@ const getUserPosts = async (req, res, next) => {
 const editPost = async (req, res, next) => {
   const { id } = req.params;
   const { title, description, location } = req.body;
-  const userId = req.user._id;
+  const userId = req.user._id; // Get the user ID from the authenticated user
 
   try {
     const db = req.app.locals.db;
@@ -127,6 +127,7 @@ const editPost = async (req, res, next) => {
 
     const post = await postsCollection.findOne({ _id: new ObjectId(id) });
 
+    // Check if the authenticated user is the creator of the post
     if (!post || post.creator.toString() !== userId) {
       return res.status(403).json({ message: 'You can only edit your own posts' });
     }
@@ -138,6 +139,7 @@ const editPost = async (req, res, next) => {
       updatedAt: new Date()
     };
 
+    // Upload image to Cloudinary if there's a file
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
       updateData.image = result.secure_url;

@@ -1,33 +1,41 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Header = () => {
+  const token = localStorage.getItem('token'); // Check if the user is logged in
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <Nav>
       <NavbarContainer>
         <NavbarMenu>
           <MenuItem><StyledLink to="/">Home</StyledLink></MenuItem>
-          <MenuItem><StyledLink to="/create">Make Post</StyledLink></MenuItem>
+          {token && <MenuItem><StyledLink to="/create">Make Post</StyledLink></MenuItem>}
           <MenuItem><StyledLink to="/baristas">Baristas</StyledLink></MenuItem>
-          <MenuItem><StyledLink to={`/profile/:id`}>Profile</StyledLink></MenuItem>
+          {token && <MenuItem><StyledLink to={`/profile/:id`}>Profile</StyledLink></MenuItem>}
           <MenuItem><StyledLink to="/about">What's 3rd Wave?</StyledLink></MenuItem>
-          <MenuItem><StyledLink to="/logout">Logout</StyledLink></MenuItem>
+          {!token && <MenuItem><StyledLink to="/signup">Signup</StyledLink></MenuItem>}
+          {!token && <MenuItem><StyledLink to="/login">Login</StyledLink></MenuItem>}
+          {token && <MenuItem><StyledLink as="button" onClick={handleLogout}>Logout</StyledLink></MenuItem>}
         </NavbarMenu>
       </NavbarContainer>
     </Nav>
-  )
-}
+  );
+};
 
-
-//style
+// Style
 
 const Nav = styled.nav`
   background: #333;
   color: #fff;
   padding: 0.5rem 1rem;
   z-index: 100;
-  //position: fixed;
   width: 100vw;
 `;
 
@@ -56,4 +64,4 @@ const StyledLink = styled(Link)`
   }
 `;
 
-export default Header
+export default Header;

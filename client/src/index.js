@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
+// Importing all the components
 import Main from './components/Main';
 import Errors from './components/Errors';
 import Home from './components/Home';
@@ -18,41 +19,35 @@ import DeletePost from './components/DeletePost';
 import BaristaPosts from './components/BaristaPosts';
 import Hub from './components/Hub';
 import About from './components/About';
-//import App from './App';
-//import reportWebVitals from './reportWebVitals';
 
+// Setting up the router with routes and their corresponding components
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Main/>,
-    errorElement: <Errors/>,
-    children:[
-      {index: true, element: <Home />},
-      {path: "signup", element: <Signup />},
-      {path: "login", element: <Login />},
-      {path: "logout", element: <Logout />},
-      {path: "baristas", element: <Baristas />},
-      {path: "profile/:id", element: <Profile />},
-      {path: "create", element: <CreatePosts />},
-      {path: "posts/:id", element: <ViewPost />},
-      {path: "posts/:id/edit", element: <EditPost />},
-      {path: "posts/:id/delete", element: <DeletePost />},
-      {path: "posts/users/:id", element: <BaristaPosts />},
-      {path: "myposts/:id", element: <Hub />},
-      {path: "about", element: <About />}
+    element: <Main />,
+    errorElement: <Errors />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: "signup", element: <Signup /> },
+      { path: "login", element: <Login /> },
+      { path: "logout", element: <Logout /> },
+      { path: "baristas", element: <Baristas /> },
+      { path: "profile/:id", element: <Profile /> },
+      { path: "create", element: <CreatePosts /> },
+      { path: "posts/:id", element: <ViewPost /> },
+      { path: "posts/:id/edit", element: <EditPost /> },
+      { path: "posts/:id/delete", element: <DeletePost /> },
+      { path: "posts/users/:id", element: <BaristaPosts /> },
+      { path: "myposts/:id", element: <Hub /> },
+      { path: "about", element: <About /> }
     ]
-
   }
-])
+]);
 
+// Rendering the router provider
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-//reportWebVitals();

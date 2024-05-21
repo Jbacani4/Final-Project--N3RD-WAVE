@@ -1,14 +1,13 @@
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-
-          
 cloudinary.config({ 
   cloud_name: 'db1hbtsyt', 
   api_key: '716247999617265', 
   api_secret: 'Tvye-lhoSLwDayABQL9Tayj5NCI' 
 });
 
+// Configuration for avatar uploads
 const avatarStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {

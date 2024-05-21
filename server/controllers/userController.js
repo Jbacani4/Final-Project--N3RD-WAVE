@@ -2,18 +2,22 @@ const { ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 const { cloudinary } = require('../config/cloudinaryConfig');
 
-// !! REGISTER A NEW USER
+// REGISTER A NEW USER
 // POST: /api/users/register
 const registerUser = async (req, res, next) => {
   const { name, email, password, cpassword } = req.body;
 
+  console.log('Incoming register request:', { name, email, password, cpassword });
+
   // Validate the input
   if (!name || !email || !password || !cpassword) {
+    console.log('Validation error: All fields are required');
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   // Validate that password and cpassword match
   if (password !== cpassword) {
+    console.log('Validation error: Passwords do not match');
     return res.status(400).json({ message: 'Passwords do not match' });
   }
 
@@ -24,14 +28,17 @@ const registerUser = async (req, res, next) => {
     // Check if the user already exists
     const existingUser = await usersCollection.findOne({ email });
     if (existingUser) {
+      console.log('Validation error: User already exists');
       return res.status(400).json({ message: 'User already exists' });
     }
 
     const result = await usersCollection.insertOne({ name, email, password, avatar: '', posts: 0 });
     if (result.insertedId) {
       const newUser = await usersCollection.findOne({ _id: result.insertedId });
+      console.log('User registered successfully:', newUser);
       res.status(201).json(newUser);
     } else {
+      console.log('Error: Failed to register user');
       res.status(500).json({ message: 'Failed to register user' });
     }
   } catch (error) {

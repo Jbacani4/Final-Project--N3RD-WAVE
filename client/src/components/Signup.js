@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Updated import
 import styled from 'styled-components';
+import { register } from '../services/authService'; // Import the register function
 
 const SignupSection = styled.section`
   display: flex;
@@ -82,21 +83,46 @@ const Signup = () => {
     name: '',
     email: '',
     password: '',
-    cpassword: ''
+    cpassword: '' // Ensure this is included
   });
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); // Updated to useNavigate
 
   const changeInputHandler = (e) => {
-    setUserData(prevState => {
-      return { ...prevState, [e.target.name]: e.target.value };
-    });
+    const { name, value } = e.target;
+    setUserData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (userData.password !== userData.cpassword) {
+      setError('Passwords do not match');
+      return;
+    }
+  
+    console.log('Submitting registration form:', userData); // Log the user data
+  
+    try {
+      const data = await register(userData.name, userData.email, userData.password, userData.cpassword);
+      setError(''); // Clear any previous errors
+      console.log('Registered user:', data);
+      // Redirect to the login page after successful registration
+      navigate('/login');
+    } catch (error) {
+      setError(error.response.data.message || 'Registration failed. Please try again.');
+      console.error('Error details:', error.response.data); // Log error details
+    }
   };
 
   return (
     <SignupSection>
       <SignupContainer>
         <Heading>Join us!</Heading>
-        <Form>
-          <FormError>Input Error</FormError>
+        <Form onSubmit={handleSubmit}>
+          {error && <FormError>{error}</FormError>}
           <Input 
             type="text" 
             placeholder='Full Name' 
@@ -105,7 +131,7 @@ const Signup = () => {
             onChange={changeInputHandler} 
           />
           <Input 
-            type="text" 
+            type="email" 
             placeholder='Email' 
             name='email' 
             value={userData.email} 
