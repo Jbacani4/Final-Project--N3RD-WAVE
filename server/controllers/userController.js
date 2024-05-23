@@ -47,7 +47,7 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-// !! LOGIN A NEW USER
+// LOGIN A NEW USER
 // POST: /api/users/login
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
@@ -79,7 +79,7 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-// !! USER PROFILE
+// USER PROFILE
 // GET: /api/users/:id
 // PROTECTED
 const getUser = async (req, res, next) => {
@@ -112,11 +112,13 @@ const getUser = async (req, res, next) => {
   }
 };
 
-// !! CHANGE USER AVATAR
+// CHANGE USER AVATAR
 // POST: /api/users/change-avatar
 // PROTECTED
 const changeAvatar = async (req, res, next) => {
   const { userId } = req.body;
+
+  console.log('Incoming change avatar request:', { userId, file: req.file });
 
   // Validate the input
   if (!userId) {

@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import Avatar from '../images/67610330_2586790641334079_2092126003500417024_n.jpg';
 import { TbPhotoEdit } from "react-icons/tb";
-
+import axios from 'axios';
 
 const ProfileSection = styled.section`
   display: flex;
@@ -13,7 +12,6 @@ const ProfileSection = styled.section`
   min-height: 90vh; 
   background-color: #f4f4f4;
 `;
-
 
 const ProfileContainer = styled.div`
   text-align: center;
@@ -83,22 +81,66 @@ const FileInput = styled.input`
 `;
 
 const Profile = () => {
-  const [avatar, setAvatar] = useState('');
+  const [user, setUser] = useState({});
+  const [avatar, setAvatar] = useState(''); // Store the uploaded file
+  const { id } = useParams(); // Get user ID from URL params
+  const token = localStorage.getItem('token'); // Get JWT token from localStorage
+
+  useEffect(() => {
+    // Fetch user profile data
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/users/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUser(response.data);
+        setAvatar(response.data.avatar); // Set avatar state to user's avatar URL
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [id, token]);
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    setAvatar(URL.createObjectURL(file)); // Preview the selected image
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+    formData.append('userId', id);
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/users/change-avatar', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setUser(response.data.user); // Update user data with the new avatar
+      setAvatar(response.data.avatarUrl); // Update avatar state
+    } catch (error) {
+      console.error('Failed to update avatar:', error);
+    }
+  };
 
   return (
     <ProfileSection>
       <ProfileContainer>
-        <Button to={`/myposts/:id`}>My Spots</Button>
+        <Button to={`/users/${id}/posts`}>My Spots</Button>
         <AvatarContainer>
           <AvatarProfile>
-            <img src={Avatar} alt='Profile Avatar' />
+            <img src={avatar || user.avatar} alt='Profile Avatar' />
             <form>
-              <FileInput type='file' id='avatar' onChange={e => setAvatar(e.target.files[0])} accept="image/png, image/jpeg"/>
+              <FileInput type='file' id='avatar' onChange={handleAvatarChange} accept="image/png, image/jpeg" />
               <CustomLabel htmlFor='avatar'><TbPhotoEdit size={24} /></CustomLabel>
             </form>
           </AvatarProfile>
         </AvatarContainer>
-        <h1>Romy Bacani</h1>
+        <h1>{user.name}</h1>
       </ProfileContainer>
     </ProfileSection>
   );

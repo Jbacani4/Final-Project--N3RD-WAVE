@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-
-// Importing all the components
 import Main from './components/Main';
 import Errors from './components/Errors';
 import Home from './components/Home';
@@ -17,10 +15,9 @@ import ViewPost from './components/ViewPost';
 import EditPost from './components/EditPost';
 import DeletePost from './components/DeletePost';
 import BaristaPosts from './components/BaristaPosts';
-import Hub from './components/Hub';
+import Hub from './components/Hub'; // Use one path for Hub component
 import About from './components/About';
 
-// Setting up the router with routes and their corresponding components
 const router = createBrowserRouter([
   {
     path: "/",
@@ -37,14 +34,12 @@ const router = createBrowserRouter([
       { path: "posts/:id", element: <ViewPost /> },
       { path: "posts/:id/edit", element: <EditPost /> },
       { path: "posts/:id/delete", element: <DeletePost /> },
-      { path: "posts/users/:id", element: <BaristaPosts /> },
-      { path: "myposts/:id", element: <Hub /> },
+      { path: "users/:id/posts", element: <Hub /> }, // Single path for viewing posts by user
       { path: "about", element: <About /> }
     ]
   }
 ]);
 
-// Rendering the router provider
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

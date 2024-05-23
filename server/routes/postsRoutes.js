@@ -1,7 +1,7 @@
 const express = require('express');
 const { createPost, getPosts, getSinglePost, getUserPosts, editPost, deletePost } = require('../controllers/postController');
-const { uploadCafePhoto } = require('../middleware/upload');
 const { authenticateToken } = require('../middleware/auth');
+const { uploadCafePhoto } = require('../middleware/upload'); // Correctly import uploadCafePhoto
 
 const router = express.Router();
 

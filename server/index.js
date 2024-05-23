@@ -6,7 +6,7 @@ const { nA, errHandler } = require('./errors/errorHandlers');
 const userRoutes = require('./routes/userRoutes');
 const postsRoutes = require('./routes/postsRoutes');
 
-dotenv.config(); // Ensure this is called before using any environment variables
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -21,6 +21,16 @@ app.get('/', (req, res) => {
   res.send('Hello, Romy here.');
 });
 
+// Use the route handlers
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postsRoutes);
+
+// Middleware for handling not found routes
+app.use(nA);
+
+// Middleware for handling errors
+app.use(errHandler);
+
 // Connect to MongoDB and then start the server
 MongoClient.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(client => {
@@ -29,16 +39,6 @@ MongoClient.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true 
     // Store the database instance in the app.locals
     const db = client.db('n3rd-wave');
     app.locals.db = db;
-
-    // Use the route handlers
-    app.use('/api/users', userRoutes);
-    app.use('/api/posts', postsRoutes);
-
-    // Middleware for handling not found routes
-    app.use(nA);
-
-    // Middleware for handling errors
-    app.use(errHandler);
 
     // Start the server only after a successful database connection
     app.listen(port, () => {
