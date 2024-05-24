@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import axios from 'axios';
+import { DataContext } from '../context/DataContext';
 
 // Style for the main section of the hub
 const HubSection = styled.section`
@@ -84,14 +85,15 @@ const Button = styled(Link)`
 
 const Hub = () => {
   const [posts, setPosts] = useState([]);
-  const { id } = useParams(); // Get user ID from URL params
+  //const { id } = useParams(); 
+  const  { userId } = useContext(DataContext)
   const token = localStorage.getItem('token'); // Get JWT token from localStorage
 
   useEffect(() => {
     // Fetch user's posts
     const fetchUserPosts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/posts/users/${id}`, {
+        const response = await axios.get(`http://localhost:5000/api/posts/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -103,7 +105,7 @@ const Hub = () => {
     };
 
     fetchUserPosts();
-  }, [id, token]);
+  }, [userId, token]);
 
   return (
     <HubSection>

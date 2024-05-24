@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import DataProvider from '../src/context/DataContext'
+
 import Main from './components/Main';
 import Errors from './components/Errors';
 import Home from './components/Home';
@@ -14,8 +16,7 @@ import Profile from './components/Profile';
 import ViewPost from './components/ViewPost';
 import EditPost from './components/EditPost';
 import DeletePost from './components/DeletePost';
-import BaristaPosts from './components/BaristaPosts';
-import Hub from './components/Hub'; // Use one path for Hub component
+import Hub from './components/Hub';
 import About from './components/About';
 
 const router = createBrowserRouter([
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
       { path: "posts/:id", element: <ViewPost /> },
       { path: "posts/:id/edit", element: <EditPost /> },
       { path: "posts/:id/delete", element: <DeletePost /> },
-      { path: "users/:id/posts", element: <Hub /> }, // Single path for viewing posts by user
+      { path: "users/:id/posts", element: <Hub /> },
       { path: "about", element: <About /> }
     ]
   }
@@ -43,6 +44,8 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <DataProvider>
     <RouterProvider router={router} />
+    </DataProvider>
   </React.StrictMode>
 );

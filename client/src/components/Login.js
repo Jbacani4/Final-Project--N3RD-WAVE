@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Updated import
 import styled from 'styled-components';
 import { login } from '../services/authService'; // Import the login function
+import { DataContext } from '../context/DataContext';
 
 const LoginSection = styled.section`
   display: flex;
@@ -79,6 +80,8 @@ const SmallText = styled.small`
 `;
 
 const Login = () => {
+  const {setUserId} = useContext(DataContext)
+
   const [userData, setUserData] = useState({
     email: '',
     password: '',
@@ -98,6 +101,7 @@ const Login = () => {
       const data = await login(userData.email, userData.password);
       setError(''); // Clear any previous errors
       console.log('Logged in user:', data);
+      setUserId(data.user._id)
       // Redirect to the desired page after login
       navigate('/'); // Change this to your desired route
     } catch (error) {

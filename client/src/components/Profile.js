@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate} from 'react-router-dom';
 import styled from 'styled-components';
-import { TbPhotoEdit } from "react-icons/tb";
 import axios from 'axios';
+import { TbPhotoEdit } from "react-icons/tb";
+import { DataContext } from '../context/DataContext';
 
 const ProfileSection = styled.section`
   display: flex;
@@ -23,7 +24,7 @@ const ProfileContainer = styled.div`
   max-width: 600px; 
 `;
 
-const Button = styled(Link)`
+const Button = styled.button`
   display: inline-block;
   padding: 10px 20px;
   margin-top: 10px;
@@ -81,47 +82,60 @@ const FileInput = styled.input`
 `;
 
 const Profile = () => {
+  //const { id } = useParams();
   const [user, setUser] = useState({});
-  const [avatar, setAvatar] = useState(''); // Store the uploaded file
-  const { id } = useParams(); // Get user ID from URL params
-  const token = localStorage.getItem('token'); // Get JWT token from localStorage
+  const [avatar, setAvatar] = useState('');
+  const {userId} = useContext(DataContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user profile data
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${id}`, {
+        const token = localStorage.getItem('token');
+        console.log("Token:", token);
+        if (!token) {
+          throw new Error("No token found");
+        }
+
+        console.log("Fetching user profile with id:", userId);
+        const response = await axios.get(`http://localhost:5000/api/users/${userId}`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
+        console.log("Fetched user profile:", response.data);
         setUser(response.data);
-        setAvatar(response.data.avatar); // Set avatar state to user's avatar URL
+        setAvatar(response.data.avatar);
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
       }
     };
 
     fetchUserProfile();
-  }, [id, token]);
+  }, [userId]);
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
-    setAvatar(URL.createObjectURL(file)); // Preview the selected image
+    if (!file) return;
 
     const formData = new FormData();
     formData.append('avatar', file);
-    formData.append('userId', id);
+    formData.append('userId', userId);
 
     try {
+      const token = localStorage.getItem('token');
+      console.log("Token for avatar change:", token);
+
       const response = await axios.post('http://localhost:5000/api/users/change-avatar', formData, {
         headers: {
+          'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+        },
       });
-      setUser(response.data.user); // Update user data with the new avatar
-      setAvatar(response.data.avatarUrl); // Update avatar state
+
+      console.log("Avatar update response:", response.data);
+      setAvatar(response.data.avatarUrl);
+      setUser(prevState => ({ ...prevState, avatar: response.data.avatarUrl }));
     } catch (error) {
       console.error('Failed to update avatar:', error);
     }
@@ -130,10 +144,10 @@ const Profile = () => {
   return (
     <ProfileSection>
       <ProfileContainer>
-        <Button to={`/users/${id}/posts`}>My Spots</Button>
+        <Button onClick={()=>{navigate(`/users/${userId}/posts`)}}>My Spots</Button>
         <AvatarContainer>
           <AvatarProfile>
-            <img src={avatar || user.avatar} alt='Profile Avatar' />
+            <img src={avatar || 'default_avatar_url'} alt='Profile Avatar' />
             <form>
               <FileInput type='file' id='avatar' onChange={handleAvatarChange} accept="image/png, image/jpeg" />
               <CustomLabel htmlFor='avatar'><TbPhotoEdit size={24} /></CustomLabel>
@@ -144,6 +158,6 @@ const Profile = () => {
       </ProfileContainer>
     </ProfileSection>
   );
-}
+};
 
 export default Profile;
