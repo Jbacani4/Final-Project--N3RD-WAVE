@@ -17,7 +17,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 const mongoUri = process.env.MONGO_URI;
 
-app.use(cors({ credentials: true, origin: "https://n3rdwave.vercel.app" }));
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
