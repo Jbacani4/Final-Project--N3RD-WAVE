@@ -2,52 +2,47 @@ const { ObjectId } = require('mongodb');
 const { cloudinary } = require('../config/cloudinaryConfig');
 
 // CREATE POST
-// POST: api/posts
-// PROTECTED
 const createPost = async (req, res, next) => {
-    const { title, description, location } = req.body;
-    const creator = req.user._id;
-  
-    if (!title || !description || !location) {
-      return res.status(400).json({ message: 'All fields are required' });
+  const { title, description, location, creator } = req.body;
+
+  if (!title || !description || !location || !creator) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const db = req.app.locals.db;
+    const postsCollection = db.collection('posts');
+
+    let imageUrl = '';
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      imageUrl = result.secure_url;
     }
-  
-    try {
-      const db = req.app.locals.db;
-      const postsCollection = db.collection('posts');
-  
-      let imageUrl = '';
-      if (req.file) {
-        const result = await cloudinary.uploader.upload(req.file.path);
-        imageUrl = result.secure_url;
-      }
-  
-      const post = {
-        title,
-        description,
-        creator: new ObjectId(creator),
-        image: imageUrl,
-        location,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-  
-      const result = await postsCollection.insertOne(post);
-  
-      if (result.insertedId) {
-        res.status(201).json({ message: 'Post created successfully', postId: result.insertedId });
-      } else {
-        res.status(500).json({ message: 'Failed to create post' });
-      }
-    } catch (error) {
-      console.error('Failed to create post', error);
-      res.status(500).json({ message: 'Failed to create post', error: error.message });
+
+    const post = {
+      title,
+      description,
+      creator: new ObjectId(creator),
+      image: imageUrl,
+      location,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    const result = await postsCollection.insertOne(post);
+
+    if (result.insertedId) {
+      res.status(201).json({ message: 'Post created successfully', postId: result.insertedId });
+    } else {
+      res.status(500).json({ message: 'Failed to create post' });
     }
-  };
+  } catch (error) {
+    console.error('Failed to create post', error);
+    res.status(500).json({ message: 'Failed to create post', error: error.message });
+  }
+};
 
 // GET ALL POSTS
-// GET: api/posts
-// UNPROTECTED
 const getPosts = async (req, res, next) => {
   try {
     const db = req.app.locals.db;
@@ -61,8 +56,6 @@ const getPosts = async (req, res, next) => {
 };
 
 // GET SINGLE POST
-// GET: api/posts/:id
-// UNPROTECTED
 const getSinglePost = async (req, res, next) => {
   const { id } = req.params;
 
@@ -88,8 +81,6 @@ const getSinglePost = async (req, res, next) => {
 };
 
 // GET POSTS BY USER
-// GET: api/posts/users/:id
-// UNPROTECTED
 const getUserPosts = async (req, res, next) => {
   const { id } = req.params;
 
@@ -110,12 +101,10 @@ const getUserPosts = async (req, res, next) => {
 };
 
 // EDIT POST
-// PATCH: api/posts/:id
-// PROTECTED
 const editPost = async (req, res, next) => {
   const { id } = req.params;
   const { title, description, location } = req.body;
-  const userId = req.user._id; // Get the user ID from the authenticated user
+  const userId = req.user._id;
 
   try {
     const db = req.app.locals.db;
@@ -127,7 +116,6 @@ const editPost = async (req, res, next) => {
 
     const post = await postsCollection.findOne({ _id: new ObjectId(id) });
 
-    // Check if the authenticated user is the creator of the post
     if (!post || post.creator.toString() !== userId) {
       return res.status(403).json({ message: 'You can only edit your own posts' });
     }
@@ -139,7 +127,6 @@ const editPost = async (req, res, next) => {
       updatedAt: new Date()
     };
 
-    // Upload image to Cloudinary if there's a file
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
       updateData.image = result.secure_url;
@@ -162,8 +149,6 @@ const editPost = async (req, res, next) => {
 };
 
 // DELETE POST
-// DELETE: api/posts/:id
-// PROTECTED
 const deletePost = async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user._id;

@@ -1,9 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import Icon from '../images/67610330_2586790641334079_2092126003500417024_n.jpg';
+import React, { useEffect, useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import styled from 'styled-components';
+import { DataContext } from '../context/DataContext';
 
-const AuthorCard = styled(Link)`
+const AuthorCard = styled.button`
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -35,14 +36,41 @@ const AuthorInfo = styled.div`
   }
 `;
 
-const PostAuthor = () => {
+const PostAuthor = ({ authorId }) => {
+  const [author, setAuthor] = useState({});
+  const { setCreatorId, setVisitProfile } = useContext(DataContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAuthor = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/users/${authorId}`);
+        setAuthor(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Failed to fetch author:', error);
+      }
+    };
+
+    if (authorId) {
+      console.log(authorId);
+      fetchAuthor();
+    }
+  }, [authorId]);
+
+   const handleClick = () => {
+    setCreatorId(authorId)
+    setVisitProfile(true)
+    navigate('/profile')
+   };
+
   return (
-    <AuthorCard to={`/profile/:id`}>
+    <AuthorCard onClick={handleClick} >
       <AuthorIcon>
-        <img src={Icon} alt='Author Icon' />
+        <img src={author.avatar} alt='Author Avatar' />
       </AuthorIcon>
       <AuthorInfo>
-        <h3>By: Romy Bacani</h3>
+        <h3>By: {author.name}</h3>
       </AuthorInfo>
     </AuthorCard>
   );

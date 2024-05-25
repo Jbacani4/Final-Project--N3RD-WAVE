@@ -1,32 +1,48 @@
-import React, { useState } from 'react'
-import PostItem from './PostItem'
+import React, { useState, useEffect } from 'react';
+import PostItem from './PostItem';
 import styled from 'styled-components';
-import { TESTPOSTS } from '../Data';
-
-
-
-
+import axios from 'axios';
 
 const PostContainer = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
 `;
 
 const Posts = () => {
-    const [posts, setPosts] =useState(TESTPOSTS);
+  const [posts, setPosts] = useState([]);
 
-    return(
-        <section className='posts'>
-        <PostContainer>
-            {posts.map(({ id, thumbnail, title, desc, authorID }) => 
-                <PostItem key={id} postID={id} thumbnail={thumbnail} title={title} desc={desc} authorID={authorID} />)
-            }
-        </PostContainer>
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/posts');
+        setPosts(response.data);
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  return (
+    <section className="posts">
+      <PostContainer>
+        {posts.map((post) => (
+          <PostItem
+            key={post._id}
+            postID={post._id}
+            thumbnail={post.image}
+            title={post.title}
+            desc={post.description}
+            authorID={post.creator}
+          />
+        ))}
+      </PostContainer>
     </section>
-    )
-}
+  );
+};
 
-export default Posts
+export default Posts;

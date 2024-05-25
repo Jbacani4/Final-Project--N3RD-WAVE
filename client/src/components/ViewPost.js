@@ -1,8 +1,9 @@
-import React from 'react';
-import PostAuthor from './PostAuthor';
-import { Link } from 'react-router-dom';
-import Thumbnail from '../images/0014_11A.jpg';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import styled from 'styled-components';
+import PostAuthor from './PostAuthor';
+import { DataContext } from '../context/DataContext';
 
 const PostSection = styled.section`
   background: #fff;
@@ -17,25 +18,6 @@ const PostContainer = styled.div`
   flex-direction: column;
 `;
 
-const PostButtons = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-`;
-
-const ButtonLink = styled(Link)`
-  padding: 10px 15px;
-  background-color: #6f4e37;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #403D39;
-  }
-`;
-
 const PostThumbnail = styled.div`
   margin-top: 20px;
   img {
@@ -45,30 +27,38 @@ const PostThumbnail = styled.div`
 `;
 
 const ViewPost = () => {
+  const { id } = useParams();
+  const [post, setPost] = useState({});
+  const { setAuthorId } = useContext(DataContext);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/posts/${id}`);
+        setPost(response.data);
+        //setAuthorId(response.data.creator); // Update context with author ID
+        //console.log(response.data.creator);
+      } catch (error) {
+        console.error('Failed to fetch post:', error);
+      }
+    };
+
+    fetchPost();
+  }, [id, setAuthorId]);
+
   return (
     <PostSection>
       <PostContainer>
-        <PostAuthor />
-        <PostButtons>
-          <ButtonLink to={`posts/:id/edit`}>Edit</ButtonLink>
-          <ButtonLink to={`posts/:id/delete`}>Delete</ButtonLink>
-        </PostButtons>
-        <h1>POST TITLE LOL</h1>
+        <PostAuthor authorId={post.creator} />
+        <h1>{post.title}</h1>
         <PostThumbnail>
-          <img src={Thumbnail} alt='' />
+          <img src={post.image} alt={post.title} />
         </PostThumbnail>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit...Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eleifend suscipit massa, vel ultricies ipsum ornare fermentum. Morbi at pulvinar eros, ut eleifend est. Vestibulum quis vestibulum neque. Aenean aliquet orci vulputate eros ultrices, eget consectetur urna porta. Aenean at luctus magna. Fusce eu scelerisque lacus. Pellentesque ultrices ligula diam, eget rhoncus nulla rutrum a. Sed et lacus ac mauris porttitor tincidunt. Nunc et risus luctus, porttitor ex quis, auctor nisi. Aliquam erat volutpat. Suspendisse elementum ligula sed nibh cursus scelerisque. Pellentesque ac metus nulla. Maecenas faucibus lacinia rhoncus. Fusce mollis risus eu odio sodales, nec sollicitudin lectus hendrerit. Proin viverra odio nec magna placerat, id venenatis mi porttitor. Curabitur placerat velit nibh, vitae luctus ipsum tincidunt sit amet.
-        </p>
-        <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eleifend suscipit massa, vel ultricies ipsum ornare fermentum. Morbi at pulvinar eros, ut eleifend est. Vestibulum quis vestibulum neque. Aenean aliquet orci vulputate eros ultrices, eget consectetur urna porta. Aenean at luctus magna. Fusce eu scelerisque lacus. Pellentesque ultrices ligula diam, eget rhoncus nulla rutrum a. Sed et lacus ac mauris porttitor tincidunt. Nunc et risus luctus, porttitor ex quis, auctor nisi. Aliquam erat volutpat. Suspendisse elementum ligula sed nibh cursus scelerisque. Pellentesque ac metus nulla. Maecenas faucibus lacinia rhoncus. Fusce mollis risus eu odio sodales, nec sollicitudin lectus hendrerit. Proin viverra odio nec magna placerat, id venenatis mi porttitor. Curabitur placerat velit nibh, vitae luctus ipsum tincidunt sit amet.
-        </p>
-        <p>
-          Nam hendrerit sapien sed est efficitur scelerisque. Donec ornare ligula eget erat gravida pharetra...Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eleifend suscipit massa, vel ultricies ipsum ornare fermentum. Morbi at pulvinar eros, ut eleifend est. Vestibulum quis vestibulum neque. Aenean aliquet orci vulputate eros ultrices, eget consectetur urna porta. Aenean at luctus magna. Fusce eu scelerisque lacus. Pellentesque ultrices ligula diam, eget rhoncus nulla rutrum a. Sed et lacus ac mauris porttitor tincidunt. Nunc et risus luctus, porttitor ex quis, auctor nisi. Aliquam erat volutpat. Suspendisse elementum ligula sed nibh cursus scelerisque. Pellentesque ac metus nulla. Maecenas faucibus lacinia rhoncus. Fusce mollis risus eu odio sodales, nec sollicitudin lectus hendrerit. Proin viverra odio nec magna placerat, id venenatis mi porttitor. Curabitur placerat velit nibh, vitae luctus ipsum tincidunt sit amet.
-        </p>
+        <p>{post.description}</p>
+        <p>{post.location}</p>
       </PostContainer>
     </PostSection>
-  )
-}
+  );
+};
 
 export default ViewPost;

@@ -86,14 +86,14 @@ const Button = styled(Link)`
 const Hub = () => {
   const [posts, setPosts] = useState([]);
   //const { id } = useParams(); 
-  const  { userId } = useContext(DataContext)
+  const  { userId, creatorId, visitProfile } = useContext(DataContext)
   const token = localStorage.getItem('token'); // Get JWT token from localStorage
 
   useEffect(() => {
     // Fetch user's posts
     const fetchUserPosts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/posts/users/${userId}`, {
+        const response = await axios.get(`http://localhost:5000/api/posts/users/${visitProfile ? creatorId:userId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

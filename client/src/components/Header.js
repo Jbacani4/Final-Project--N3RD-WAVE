@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { DataContext } from '../context/DataContext';
 
 const Header = () => {
   const token = localStorage.getItem('token'); // Check if the user is logged in
   const navigate = useNavigate();
+  const { userId, creatorId, setCreatorId, visitProfile, setVisitProfile } = useContext(DataContext);
+
+  const handleProfile = () => {
+    if (visitProfile && creatorId){
+      setVisitProfile(false) 
+      setCreatorId(null)
+    }else if(!visitProfile && creatorId ){
+      setVisitProfile(true)
+    }
+    navigate('/profile')
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -17,9 +29,8 @@ const Header = () => {
         <NavbarMenu>
           <MenuItem><StyledLink to="/">Home</StyledLink></MenuItem>
           {token && <MenuItem><StyledLink to="/create">Make Post</StyledLink></MenuItem>}
-          <MenuItem><StyledLink to="/baristas">Baristas</StyledLink></MenuItem>
-          {token && <MenuItem><StyledLink to={`/profile/:id`}>Profile</StyledLink></MenuItem>}
           <MenuItem><StyledLink to="/about">What's 3rd Wave?</StyledLink></MenuItem>
+          {token && <MenuItem><StyledLink as="button" onClick={handleProfile}>Profile</StyledLink></MenuItem>}
           {!token && <MenuItem><StyledLink to="/signup">Signup</StyledLink></MenuItem>}
           {!token && <MenuItem><StyledLink to="/login">Login</StyledLink></MenuItem>}
           {token && <MenuItem><StyledLink as="button" onClick={handleLogout}>Logout</StyledLink></MenuItem>}

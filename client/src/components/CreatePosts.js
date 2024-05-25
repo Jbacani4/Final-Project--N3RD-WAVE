@@ -1,49 +1,137 @@
-import React, { useState } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import axios from 'axios';
+import { DataContext } from '../context/DataContext';
+
+const FormContainer = styled.div`
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+`;
+
+const FormField = styled.div`
+  margin-bottom: 15px;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+`;
+
+const Button = styled.button`
+  padding: 10px 20px;
+  background-color: #6f4e37;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #403D39;
+  }
+`;
 
 const CreatePosts = () => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
+  const [post, setPost] = useState({ title: '', description: '', location: '', image: null });
+  const { userId } = useContext(DataContext);
+  const navigate = useNavigate();
 
-  const modules = {
-    toolbar: [
-      [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
-      [{size: []}],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, 
-       {'indent': '-1'}, {'indent': '+1'}],
-      ['link', 'image', 'video'],
-      ['clean']
-    ],
-    clipboard: {
-      // Match visual, not semantic
-      matchVisual: false,
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPost((prevPost) => ({
+      ...prevPost,
+      [name]: value,
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setPost((prevPost) => ({
+      ...prevPost,
+      image: file,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('title', post.title);
+    formData.append('description', post.description);
+    formData.append('location', post.location);
+    formData.append('creator', userId);
+    if (post.image) {
+      formData.append('image', post.image);
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/api/posts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to create post:', error);
     }
   };
 
-  const formats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'image', 'video'
-  ];
-
   return (
-    <section className='Create'>
-      <div className='CreateContainer'>
-        <h2>Share your spot, no gatekeeping!</h2>
-      
-        <form className='CreateForm'>
-          <input type='text' placeholder='Title' value={title} onChange={e => setTitle(e.target.value)} autoFocus />
-          <ReactQuill theme="snow" modules={modules} formats={formats} value={body} onChange={setBody} />
-          <input type='file' onChange={e => setThumbnail(e.target.files[0])} accept='image/png, image/jpeg'/>
-          <button type='submit' className='btnSubmit'>Share</button>
-        </form>
-      </div>
-    </section>
+    <FormContainer>
+      <h2>Create New Post</h2>
+      <form onSubmit={handleSubmit}>
+        <FormField>
+          <label htmlFor="title">Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={post.title}
+            onChange={handleInputChange}
+            required
+          />
+        </FormField>
+        <FormField>
+          <label htmlFor="description">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            value={post.description}
+            onChange={handleInputChange}
+            required
+          ></textarea>
+        </FormField>
+        <FormField>
+          <label htmlFor="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={post.location}
+            onChange={handleInputChange}
+            required
+          />
+        </FormField>
+        <FormField>
+          <label htmlFor="image">Image</label>
+          <input type="file" id="image" name="image" onChange={handleImageChange} />
+        </FormField>
+        <Button type="submit">Create Post</Button>
+      </form>
+    </FormContainer>
   );
-}
+};
 
 export default CreatePosts;

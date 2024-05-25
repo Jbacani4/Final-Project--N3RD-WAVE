@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import { TbPhotoEdit } from "react-icons/tb";
@@ -8,9 +8,9 @@ import { DataContext } from '../context/DataContext';
 const ProfileSection = styled.section`
   display: flex;
   justify-content: center;
-  align-items: flex-start; 
-  padding-top: 10vh; 
-  min-height: 90vh; 
+  align-items: flex-start;
+  padding-top: 10vh;
+  min-height: 90vh;
   background-color: #f4f4f4;
 `;
 
@@ -20,8 +20,8 @@ const ProfileContainer = styled.div`
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  width: 80%; 
-  max-width: 600px; 
+  width: 80%;
+  max-width: 600px;
 `;
 
 const Button = styled.button`
@@ -82,28 +82,24 @@ const FileInput = styled.input`
 `;
 
 const Profile = () => {
-  //const { id } = useParams();
   const [user, setUser] = useState({});
   const [avatar, setAvatar] = useState('');
-  const {userId} = useContext(DataContext);
+  const { userId, creatorId, visitProfile } = useContext(DataContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        console.log("Token:", token);
         if (!token) {
           throw new Error("No token found");
         }
 
-        console.log("Fetching user profile with id:", userId);
-        const response = await axios.get(`http://localhost:5000/api/users/${userId}`, {
+        const response = await axios.get(`http://localhost:5000/api/users/${visitProfile ? creatorId:userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Fetched user profile:", response.data);
         setUser(response.data);
         setAvatar(response.data.avatar);
       } catch (error) {
@@ -112,7 +108,7 @@ const Profile = () => {
     };
 
     fetchUserProfile();
-  }, [userId]);
+  }, [userId, creatorId, visitProfile]);
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
@@ -124,7 +120,6 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      console.log("Token for avatar change:", token);
 
       const response = await axios.post('http://localhost:5000/api/users/change-avatar', formData, {
         headers: {
@@ -133,7 +128,6 @@ const Profile = () => {
         },
       });
 
-      console.log("Avatar update response:", response.data);
       setAvatar(response.data.avatarUrl);
       setUser(prevState => ({ ...prevState, avatar: response.data.avatarUrl }));
     } catch (error) {
@@ -144,7 +138,7 @@ const Profile = () => {
   return (
     <ProfileSection>
       <ProfileContainer>
-        <Button onClick={()=>{navigate(`/users/${userId}/posts`)}}>My Spots</Button>
+        <Button onClick={() => { navigate(`/users/posts`) }}>My Spots</Button>
         <AvatarContainer>
           <AvatarProfile>
             <img src={avatar || 'default_avatar_url'} alt='Profile Avatar' />
