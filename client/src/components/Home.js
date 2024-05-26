@@ -20,7 +20,7 @@ const Home = () => {
 
   return (
     <div>
-      <h1>All Posts</h1>
+      <h1>Check out these amazing Cafés:</h1>
       <Posts posts={posts} />
     </div>
   );

@@ -114,7 +114,7 @@ const CreatePosts = () => {
           ></textarea>
         </FormField>
         <FormField>
-          <label htmlFor="location">Location</label>
+          <label htmlFor="location">Café & Location</label>
           <input
             type="text"
             id="location"
