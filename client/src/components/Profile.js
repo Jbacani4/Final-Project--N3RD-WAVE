@@ -95,7 +95,7 @@ const Profile = () => {
           throw new Error("No token found");
         }
 
-        const response = await axios.get(`http://localhost:5000/api/users/${visitProfile ? creatorId:userId}`, {
+        const response = await axios.get(`https://final-project-n3rd-wave.onrender.com/api/users/${visitProfile ? creatorId:userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -121,7 +121,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.post('http://localhost:5000/api/users/change-avatar', formData, {
+      const response = await axios.post('https://final-project-n3rd-wave.onrender.com/api/users/change-avatar', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,

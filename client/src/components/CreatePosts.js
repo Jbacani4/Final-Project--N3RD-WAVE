@@ -76,7 +76,7 @@ const CreatePosts = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/posts', formData, {
+      await axios.post('https://final-project-n3rd-wave.onrender.com/api/posts', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,

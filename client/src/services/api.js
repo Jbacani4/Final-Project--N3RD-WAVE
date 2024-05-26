@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // Update this to backend URL if changes
+const API_URL = 'https://final-project-n3rd-wave.onrender.com/api'; // Update this to backend URL if changes
 
 // Create an Axios instance
 const api = axios.create({

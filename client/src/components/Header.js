@@ -6,7 +6,7 @@ import { DataContext } from '../context/DataContext';
 const Header = () => {
   const token = localStorage.getItem('token'); // Check if the user is logged in
   const navigate = useNavigate();
-  const { userId, creatorId, setCreatorId, visitProfile, setVisitProfile } = useContext(DataContext);
+  const { setUserId, creatorId, setCreatorId, visitProfile, setVisitProfile } = useContext(DataContext);
 
   const handleProfile = () => {
     if (visitProfile && creatorId){
@@ -19,6 +19,7 @@ const Header = () => {
   }
 
   const handleLogout = () => {
+    setUserId('')
     localStorage.removeItem('token');
     navigate('/login');
   };

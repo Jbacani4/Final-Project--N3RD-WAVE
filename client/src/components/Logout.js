@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { DataContext } from '../context/DataContext';
 
 const LogoutSection = styled.section`
   display: flex;
@@ -59,7 +60,12 @@ const CancelButton = styled(Button)`
 const Logout = () => {
   const navigate = useNavigate();
 
+  const {setUserId} = useContext(DataContext)
+
+
   const handleLogout = () => {
+    setUserId('')
+
     // Remove the token from localStorage
     localStorage.removeItem('token');
     // Redirect to the login page

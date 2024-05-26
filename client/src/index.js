@@ -4,6 +4,7 @@ import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import DataProvider from '../src/context/DataContext';
 
+
 import Main from './components/Main';
 import Errors from './components/Errors';
 import Home from './components/Home';
@@ -18,6 +19,8 @@ import EditPost from './components/EditPost';
 import DeletePost from './components/DeletePost';
 import Hub from './components/Hub';
 import About from './components/About';
+import RedirectToLogin from './components/RedirectToLogin'
+import AuthProvider from './context/AuthContext';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +40,7 @@ const router = createBrowserRouter([
       { path: 'posts/:id/delete', element: <DeletePost /> },
       { path: 'users/posts', element: <Hub /> },
       { path: 'about', element: <About /> },
+      { path: "redirect-to-login", element: <RedirectToLogin /> }
     ],
   },
 ]);
@@ -44,8 +48,10 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <DataProvider>
-      <RouterProvider router={router} />
-    </DataProvider>
+    <AuthProvider>
+      <DataProvider>
+        <RouterProvider router={router} />
+      </DataProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

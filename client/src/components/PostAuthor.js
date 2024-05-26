@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import { DataContext } from '../context/DataContext';
+import { AuthContext } from '../context/AuthContext';
 
 const AuthorCard = styled.button`
   display: flex;
@@ -38,7 +39,8 @@ const AuthorInfo = styled.div`
 
 const PostAuthor = ({ authorId }) => {
   const [author, setAuthor] = useState({});
-  const { setCreatorId, setVisitProfile } = useContext(DataContext);
+  const { setCreatorId, setVisitProfile, userId } = useContext(DataContext);
+  const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,10 +61,16 @@ const PostAuthor = ({ authorId }) => {
   }, [authorId]);
 
    const handleClick = () => {
-    setCreatorId(authorId)
-    setVisitProfile(true)
-    navigate('/profile')
-   };
+    if (userId) {
+      setCreatorId(authorId);
+      setVisitProfile(true);
+      navigate('/profile');
+      console.log(isLoggedIn);
+      console.log(userId);
+    } else {
+      navigate('/redirect-to-login');
+    }
+  };
 
   return (
     <AuthorCard onClick={handleClick} >
