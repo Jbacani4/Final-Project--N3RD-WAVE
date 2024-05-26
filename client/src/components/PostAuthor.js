@@ -46,7 +46,7 @@ const PostAuthor = ({ authorId }) => {
   useEffect(() => {
     const fetchAuthor = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${authorId}`);
+        const response = await axios.get(`https://final-project-n3rd-wave.onrender.com/api/users/${authorId}`);
         setAuthor(response.data);
         console.log(response.data);
       } catch (error) {
